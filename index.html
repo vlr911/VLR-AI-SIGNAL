@@ -388,6 +388,24 @@ if ("serviceWorker" in navigator) {
       .catch((error) => console.error("VLR Service Worker error:", error));
   });
 }
+const notifyButton = $("notify");
+
+if (notifyButton) {
+  notifyButton.onclick = async () => {
+    if (!("Notification" in window)) {
+      alert("Notifications are not supported on this device.");
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission === "granted") {
+      notifyButton.textContent = "🔔 Notifications Enabled";
+    } else {
+      notifyButton.textContent = "🔕 Notifications Blocked";
+    }
+  };
+}
 
 </script>
 
