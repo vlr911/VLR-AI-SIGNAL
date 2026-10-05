@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Velora Signal Engine</title><style>
+body{margin:0;background:#0b0e14;color:#edf1f7;font:15px system-ui;padding:22px}.wrap{max-width:900px;margin:auto}.panel{background:#151b26;border:1px solid #293244;border-radius:14px;padding:20px;margin:12px 0}.gold{color:#d9b86c}.muted{color:#98a4b8}.big{font-size:32px;font-weight:800}button{padding:11px 15px;background:#d9b86c;color:#17140d;border:0;border-radius:8px;font-weight:700}pre{white-space:pre-wrap;overflow-wrap:anywhere;color:#b9c7dc}
+</style><div class="wrap"><h2 class="gold">VELORA AI SIGNAL PRO · V2</h2><p class="muted">Local signal-engine test interface. Incoming sample candles are synthetic, not live market data.</p>
+<div class="panel"><div class="muted">Engine status</div><div id="health">Checking…</div><button id="run">Run sample analysis</button></div>
+<div class="panel"><div class="muted">Latest result</div><div class="big" id="side">—</div><pre id="out">Press run to test.</pre></div>
+<p class="muted">This is a rule-based prototype. Connect a verified market-data provider and test on demo before considering live use. Signals can lose; score is not win probability.</p></div>
+<script>
+const $=x=>document.getElementById(x);
+fetch('/api/health').then(r=>r.json()).then(x=>$('health').textContent=x.ok?'API online · '+x.mode:'Offline').catch(()=>$('health').textContent='API unavailable');
+function sample(){let p=2320+Math.random()*15,arr=[],t=Math.floor(Date.now()/1000)-70*900;for(let i=0;i<70;i++){let o=p,c=o+(Math.random()-.48)*2.5,h=Math.max(o,c)+Math.random(),l=Math.min(o,c)-Math.random();arr.push({time:t+i*900,open:+o.toFixed(2),high:+h.toFixed(2),low:+l.toFixed(2),close:+c.toFixed(2),volume:0});p=c;}return arr;}
+$('run').onclick=async()=>{ $('side').textContent='Analyzing…';try{let r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({symbol:'XAUUSD',timeframe:'M15',candles:sample()})});let d=await r.json();$('side').textContent=d.signal;$('out').textContent=JSON.stringify(d,null,2);}catch(e){$('side').textContent='Error';$('out').textContent=String(e)}};
+</script></html>
