@@ -8,6 +8,8 @@ from urllib.request import urlopen
 import json
 import math
 import time
+import os
+from pywebpush import webpush, WebPushException
 
 
 BASE = Path(__file__).parent
@@ -25,6 +27,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# VLR Web Push
+PUSH_SUBSCRIPTION = None
+
+VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY")
+
+VAPID_SUBJECT = (
+    "https://vlr911.github.io/VLR-AI-SIGNAL/"
+)
+
+@app.post("/api/push/subscribe")
+def push_subscribe(subscription: dict):
+    global PUSH_SUBSCRIPTION
+
+    PUSH_SUBSCRIPTION = subscription
+
+    return {
+        "ok": True,
+        "message": "Push subscription saved"
+    }
 
 
 class Candle(BaseModel):
