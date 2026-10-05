@@ -375,6 +375,13 @@ $("run").onclick =
 
 checkHealth();
 setInterval(liveAnalysis, 60000);  
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("VLR Service Worker registered"))
+      .catch((error) => console.error("VLR Service Worker error:", error));
+  });
+}
 
 </script>
 
