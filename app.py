@@ -8,7 +8,6 @@ import math
 
 BASE=Path(__file__).parent
 app=FastAPI(title="Velora Signal Engine", version="0.2.0")
-app.mount("/static",StaticFiles(directory=BASE/"static"),name="static")
 
 class Candle(BaseModel):
     time: int
@@ -32,7 +31,7 @@ def ema(values, period):
 
 @app.get("/")
 def home():
-    return FileResponse(BASE/"static"/"index.html")
+    return FileResponse(BASE/"index.html")
 
 @app.get("/api/health")
 def health():
