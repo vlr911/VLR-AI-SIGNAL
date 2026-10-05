@@ -47,6 +47,47 @@ def push_subscribe(subscription: dict):
         "message": "Push subscription saved"
     }
 
+@app.post("/api/push/test")
+def push_test():
+    if not PUSH_SUBSCRIPTION:
+        raise HTTPException(
+            status_code=400,
+            detail="No push subscription saved"
+        )
+
+    if not VAPID_PRIVATE_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="VAPID_PRIVATE_KEY is missing"
+        )
+
+    payload = json.dumps({
+        "title": "VLR AI SIGNAL",
+        "body": "🔔 Test notification berjaya dihantar.",
+        "url": "https://vlr911.github.io/VLR-AI-SIGNAL/"
+    })
+
+    try:
+        webpush(
+            subscription_info=PUSH_SUBSCRIPTION,
+            data=payload,
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims={
+                "sub": VAPID_SUBJECT
+            }
+        )
+
+        return {
+            "ok": True,
+            "message": "Test push sent"
+        }
+
+    except WebPushException as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
 
 class Candle(BaseModel):
     time: int
